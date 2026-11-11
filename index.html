@@ -1,681 +1,8 @@
 
-<!DOCTYPE html>
-<html lang="si">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#070817">
-<title>SIHINA VOICE V2</title>
+const SIHINA_WORKER =
+  "https://shiny-scene-33ccsihina-voice-brain.sihinakumara263.workers.dev/";
 
-<style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  min-height: 100vh;
-  background: radial-gradient(circle at top, #18204a, #080a19 55%, #03040b);
-  color: white;
-  font-family: Arial, sans-serif;
-}
-
-header {
-  text-align: center;
-  padding: 22px 12px;
-  border-bottom: 1px solid #ffffff20;
-}
-
-header h1 {
-  color: #8cecff;
-  letter-spacing: 3px;
-  text-shadow: 0 0 15px #00cfff;
-}
-
-header p {
-  color: #aab5d5;
-  font-size: 12px;
-  margin-top: 7px;
-}
-
-main {
-  width: 100%;
-  max-width: 600px;
-  padding: 18px;
-  margin: auto;
-}
-
-.orb-area {
-  height: 220px;
-  display: grid;
-  place-items: center;
-  position: relative;
-}
-
-.orb {
-  width: 145px;
-  height: 145px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 25%,
-    white 0%, #9ffaff 5%, #32cfff 20%,
-    #3158ff 55%, #6416b8 80%, #10072d 100%);
-  box-shadow: 0 0 25px #00d9ff,
-              0 0 65px #375bff,
-              0 0 100px #851cff,
-              inset -15px -15px 30px #090526;
-  animation: float 4s ease-in-out infinite;
-  position: relative;
-}
-
-.orb::after {
-  content: "";
-  position: absolute;
-  inset: -14px;
-  border-radius: 50%;
-  border: 2px solid #51eaff70;
-  box-shadow: 0 0 20px #00d9ff;
-}
-
-.ring {
-  position: absolute;
-  width: 195px;
-  height: 195px;
-  border-radius: 50%;
-  border: 2px solid #44dfff70;
-  transform: rotateX(65deg);
-  animation: spin 7s linear infinite;
-}
-
-.ring.two {
-  width: 220px;
-  height: 220px;
-  border-color: #a45aff70;
-  animation: spin2 9s linear infinite;
-}
-
-.orb-area.active .orb {
-  animation: pulse .7s infinite alternate;
-}
-
-@keyframes float {
-  50% { transform: translateY(-12px); }
-}
-
-@keyframes spin {
-  to { transform: rotateX(65deg) rotateZ(360deg); }
-}
-
-@keyframes spin2 {
-  to { transform: rotateX(65deg) rotateZ(-360deg); }
-}
-
-@keyframes pulse {
-  to { transform: scale(1.12); }
-}
-
-.status {
-  text-align: center;
-  color: #8cecff;
-  min-height: 24px;
-  font-size: 14px;
-  margin-bottom: 14px;
-}
-
-.profile, .chat, .settings {
-  background: #11172dcc;
-  border: 1px solid #354477;
-  border-radius: 17px;
-  padding: 15px;
-  margin-bottom: 15px;
-  box-shadow: 0 0 20px #142c6030;
-}
-
-h2 {
-  font-size: 16px;
-  color: #8cecff;
-  margin-bottom: 12px;
-}
-
-.profile p {
-  font-size: 14px;
-  line-height: 1.9;
-  overflow-wrap: anywhere;
-}
-
-.chat {
-  height: 260px;
-  overflow-y: auto;
-}
-
-.msg {
-  padding: 11px 13px;
-  margin-bottom: 10px;
-  border-radius: 13px;
-  max-width: 92%;
-  font-size: 14px;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-  white-space: pre-wrap;
-}
-
-.user {
-  background: #174d7c;
-  margin-left: auto;
-}
-
-.bot {
-  background: #30215e;
-  margin-right: auto;
-}
-
-.controls {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-input {
-  min-width: 0;
-  flex: 1;
-  padding: 14px;
-  border-radius: 13px;
-  border: 1px solid #46558c;
-  background: #11172d;
-  color: white;
-  outline: none;
-  font-size: 14px;
-}
-
-button {
-  border: none;
-  border-radius: 13px;
-  padding: 13px 16px;
-  color: white;
-  background: linear-gradient(135deg,#176bdb,#7a30cf);
-  font-weight: bold;
-  cursor: pointer;
-}
-
-button:active {
-  transform: scale(.96);
-}
-
-.mic {
-  width: 65px;
-  font-size: 22px;
-  border-radius: 50%;
-  background: linear-gradient(135deg,#00a8d8,#6438da);
-}
-
-.mic.active {
-  background: #e33b66;
-}
-
-.small-buttons {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.small-buttons button {
-  font-size: 12px;
-  padding: 10px 12px;
-}
-
-select {
-  width: 100%;
-  padding: 12px;
-  background: #11172d;
-  color: white;
-  border: 1px solid #46558c;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-
-footer {
-  text-align: center;
-  color: #7783a8;
-  font-size: 11px;
-  padding: 20px;
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  <h1>SIHINA VOICE</h1>
-  <p>YOUR PERSONAL SINHALA ASSISTANT</p>
-</header>
-
-<main>
-
-  <div class="orb-area" id="orbArea">
-    <div class="ring"></div>
-    <div class="ring two"></div>
-    <div class="orb"></div>
-  </div>
-
-  <div class="status" id="status">
-    ආයුබෝවන්! මම SIHINA ❤️
-  </div>
-
-  <section class="profile">
-    <h2>❤️ මගේ අයිතිකරුගේ විස්තර</h2>
-    <p id="profileDetails"></p>
-  </section>
-
-  <section class="chat" id="chat">
-    <div class="msg bot">
-      ආයුබෝවන් කවිශ්ක! ❤️
-      මම ඔයාගේ SIHINA VOICE සහායිකාව.
-      අපි අද මොනවාද කතා කරන්නේ?
-    </div>
-  </section>
-
-  <div class="controls">
-    <input id="userInput" type="text"
-      placeholder="මෙතැන සිංහලෙන් ලියන්න..."
-      autocomplete="off">
-    <button onclick="sendMessage()">යවන්න</button>
-  </div>
-
-  <div class="controls">
-    <button class="mic" id="micButton"
-      onclick="startListening()">🎙️</button>
-    <button style="flex:1" onclick="stopSpeaking()">
-      🔇 හඬ නවත්වන්න
-    </button>
-  </div>
-
-  <section class="settings">
-    <h2>⚙️ හඬ සැකසුම්</h2>
-    <select id="voiceSelect">
-      <option value="">ස්වයංක්‍රීය හඬ තෝරන්න</option>
-    </select>
-    <div class="small-buttons">
-      <button onclick="testVoice()">හඬ පරීක්ෂා කරන්න</button>
-      <button onclick="clearChat()">කතාබහ මකන්න</button>
-      <button onclick="clearMemory()">මතක මකන්න</button>
-    </div>
-  </section>
-
-</main>
-
-<footer>
-  SIHINA VOICE V2 • OFFLINE EDITION
-</footer>
-
-<script>
-/* ==============================
-   1. KAVISHKA'S PERSONAL PROFILE
-================================ */
-
-const OWNER = {
-  name: "කේ.ඩී. කවිශ්ක රන්දුනු",
-  birthday: "2002-05-23",
-  favoriteColor: "කහ",
-  favoriteBike: "Pulsar 150",
-  email: "sihinakumara263@gmail.com"
-};
-
-function calculateAge(dateString) {
-  const birth = new Date(dateString + "T00:00:00");
-  const today = new Date();
-
-  let age = today.getFullYear() - birth.getFullYear();
-
-  const birthdayNotReached =
-    today.getMonth() < birth.getMonth() ||
-    (today.getMonth() === birth.getMonth() &&
-     today.getDate() < birth.getDate());
-
-  if (birthdayNotReached) age--;
-
-  return age;
-}
-
-function showProfile() {
-  document.getElementById("profileDetails").innerHTML =
-    "👤 නම: " + OWNER.name + "<br>" +
-    "🎂 උපන්දිනය: 23/05/2002<br>" +
-    "🎈 වයස: " + calculateAge(OWNER.birthday) + "<br>" +
-    "💛 කැමතිම පාට: " + OWNER.favoriteColor + "<br>" +
-    "🏍️ ආසම බයික් එක: " + OWNER.favoriteBike + "<br>" +
-    "📧 Gmail: " + OWNER.email;
-}
-
-showProfile();
-
-
-/* ==============================
-   2. LOCAL MEMORY
-================================ */
-
-let memories = {};
-
-try {
-  memories = JSON.parse(
-    localStorage.getItem("sihinaMemories") || "{}"
-  );
-} catch (e) {
-  memories = {};
-}
-
-let history = [];
-
-try {
-  history = JSON.parse(
-    localStorage.getItem("sihinaChat") || "[]"
-  );
-} catch (e) {
-  history = [];
-}
-
-function saveMemory() {
-  try {
-    localStorage.setItem(
-      "sihinaMemories",
-      JSON.stringify(memories)
-    );
-  } catch (e) {}
-}
-
-function saveHistory() {
-  try {
-    localStorage.setItem(
-      "sihinaChat",
-      JSON.stringify(history.slice(-40))
-    );
-  } catch (e) {}
-}
-
-function addMemory(key, value) {
-  memories[key] = value;
-  saveMemory();
-}
-
-
-/* ==============================
-   3. CHAT DISPLAY
-================================ */
-
-const chat = document.getElementById("chat");
-
-function addMessage(text, type) {
-  const div = document.createElement("div");
-  div.className = "msg " + type;
-  div.textContent = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function restoreChat() {
-  history.slice(-30).forEach(item => {
-    addMessage(item.text, item.role);
-  });
-}
-
-restoreChat();
-
-
-/* ==============================
-   4. VOICE SYSTEM
-================================ */
-
-let voices = [];
-
-function loadVoices() {
-  voices = speechSynthesis.getVoices();
-
-  const select = document.getElementById("voiceSelect");
-  select.innerHTML =
-    '<option value="">ස්වයංක්‍රීය හඬ තෝරන්න</option>';
-
-  voices.forEach((voice, index) => {
-    const option = document.createElement("option");
-    option.value = index;
-    option.textContent =
-      voice.name + " (" + voice.lang + ")";
-    select.appendChild(option);
-  });
-}
-
-if ("speechSynthesis" in window) {
-  loadVoices();
-  speechSynthesis.onvoiceschanged = loadVoices;
-}
-
-function speak(text) {
-  if (!("speechSynthesis" in window)) {
-    setStatus("ඔයාගේ බ්‍රවුසරයේ හඬ පහසුකම නැහැ");
-    return;
-  }
-
-  speechSynthesis.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "si-LK";
-  utterance.rate = 0.92;
-  utterance.pitch = 1.08;
-
-  const selected =
-    document.getElementById("voiceSelect").value;
-
-  if (selected !== "" && voices[selected]) {
-    utterance.voice = voices[selected];
-  } else {
-    const sinhalaVoice =
-      voices.find(v => v.lang.toLowerCase().startsWith("si"));
-
-    if (sinhalaVoice) utterance.voice = sinhalaVoice;
-  }
-
-  utterance.onstart = () => {
-    document.getElementById("orbArea").classList.add("active");
-    setStatus("SIHINA කතා කරනවා... 🔊");
-  };
-
-  utterance.onend = () => {
-    document.getElementById("orbArea").classList.remove("active");
-    setStatus("ඔයාට තව මොනවාද දැනගන්න ඕනේ?");
-  };
-
-  speechSynthesis.speak(utterance);
-}
-
-function stopSpeaking() {
-  if ("speechSynthesis" in window) {
-    speechSynthesis.cancel();
-  }
-  document.getElementById("orbArea").classList.remove("active");
-  setStatus("හඬ නතර කළා");
-}
-
-function testVoice() {
-  speak("ආයුබෝවන් කවිශ්ක. මම ඔයාගේ SIHINA VOICE.");
-}
-
-
-/* ==============================
-   5. OFFLINE BRAIN
-================================ */
-
-function brain(input) {
-  const text = input.toLowerCase().trim();
-
-  // Owner questions
-  if (
-    text.includes("මගේ නම") ||
-    text.includes("මම කවුද")
-  ) {
-    return "ඔයාගේ නම කේ.ඩී. කවිශ්ක රන්දුනු. ❤️";
-  }
-
-  if (
-    text.includes("මගේ වයස") ||
-    text.includes("වයස කීයද")
-  ) {
-    return "ඔයාගේ වයස අවුරුදු " +
-      calculateAge(OWNER.birthday) + "යි.";
-  }
-
-  if (text.includes("උපන්දිනය")) {
-    return "ඔයාගේ උපන්දිනය 2002 මැයි 23. 🎂";
-  }
-
-  if (
-    text.includes("කැමතිම පාට") ||
-    text.includes("ආසම පාට")
-  ) {
-    return "ඔයා කැමතිම පාට කහ පාටයි. 💛";
-  }
-
-  if (
-    text.includes("ආසම බයික්") ||
-    text.includes("කැමතිම බයික්")
-  ) {
-    return "ඔයා ආසම බයික් එක Pulsar 150. 🏍️";
-  }
-
-  if (
-    text.includes("මගේ gmail") ||
-    text.includes("මගේ ඊමේල්")
-  ) {
-    return "ඔයාගේ Gmail ලිපිනය " + OWNER.email;
-  }
-
-  if (
-    text.includes("ඔයාගේ නම") ||
-    text.includes("කවුද ඔයා")
-  ) {
-    return "මගේ නම SIHINA VOICE. මම ඔයාගේ පෞද්ගලික සහායිකාව. ❤️";
-  }
-
-  if (
-    text.includes("කොහොමද") ||
-    text.includes("කොහොම ඉන්නවද")
-  ) {
-    return "මම හොඳින් ඉන්නවා කවිශ්ක! ඔයා කොහොමද? 😊";
-  }
-
-  if (
-    text.includes("ආදරෙයි") ||
-    text.includes("මං ඔයාට ආදරෙයි")
-  ) {
-    return "අනේ කවිශ්ක! ඔයා හරිම හොඳයි. ❤️";
-  }
-
-  if (
-    text.includes("ස්තූතියි") ||
-    text.includes("තැන්ක්ස්")
-  ) {
-    return "ඒකට මොකටද ස්තූති කරන්නේ කවිශ්ක! මම ඉන්නේ උදව් කරන්නනේ. ❤️";
-  }
-
-  if (
-    text.includes("සුබ උදෑසනක්") ||
-    text.includes("ගුඩ් මෝනින්")
-  ) {
-    return "සුබ උදෑසනක් කවිශ්ක! අද දවස ලස්සන දවසක් වේවා! ☀️";
-  }
-
-  if (
-    text.includes("සුබ රාත්‍රියක්") ||
-    text.includes("ගුඩ් නයිට්")
-  ) {
-    return "සුබ රාත්‍රියක් කවිශ්ක! හොඳින් නිදාගන්න. ❤️";
-  }
-
-  if (
-    text.includes("මොකද කරන්නේ") ||
-    text.includes("මොකද කරන්නෙ")
-  ) {
-    return "මම ඔයා එක්ක කතා කරන්න බලාගෙන ඉන්නවා. 😄";
-  }
-
-  if (
-    text.includes("මතක තියෙනවද") ||
-    text.includes("මතකද")
-  ) {
-    return "ඔව්! ඔයා ගැන මට මතක තොරතුරු තියෙනවා. ඔයා කේ.ඩී. කවිශ්ක රන්දුනු. ❤️";
-  }
-
-  if (
-    text.includes("කහ") ||
-    text.includes("yellow")
-  ) {
-    return "කහ පාට ඔයාගේ ප්‍රියතම පාට නේද කවිශ්ක! 💛";
-  }
-
-  if (
-    text.includes("පල්සර්") ||
-    text.includes("pulsar")
-  ) {
-    return "Pulsar 150! ඔයාගේ ආසම බයික් එක. 🏍️";
-  }
-
-  if (
-    text.includes("හෙලෝ") ||
-    text.includes("හලෝ") ||
-    text.includes("හායි")
-  ) {
-    return "හෙලෝ කවිශ්ක! ❤️ කියන්න, මම අහගෙන ඉන්නවා.";
-  }
-
-  const replies = [
-    "ඒ ගැන තව ටිකක් කියන්නකෝ කවිශ්ක. 😊",
-    "හ්ම්ම්... මම අහගෙන ඉන්නවා. තව කියන්න. ❤️",
-    "ඒක හොඳ අදහසක් වගේ! තව විස්තර කියන්න.",
-    "මට තේරෙනවා. අපි ඒ ගැන කතා කරමු.",
-    "අනේ ඇත්තටමද? 😄 තව කියන්නකෝ."
-  ];
-
-  return replies[Math.floor(Math.random() * replies.length)];
-}
-
-
-/* ==============================
-   6. LEARN NEW MEMORY
-================================ */
-
-function learnFromMessage(text) {
-  const lower = text.toLowerCase();
-
-  if (lower.startsWith("මතක තියාගන්න ")) {
-    const value = text.substring(
-      "මතක තියාගන්න ".length
-    ).trim();
-
-    if (value.length > 0 && value.length < 300) {
-      const key = "memory_" + Date.now();
-      addMemory(key, value);
-      return "හරි කවිශ්ක! ❤️ මේ දේ මම මේ දුරකථනයේ මතකයට එකතු කළා: " + value;
-    }
-  }
-
-  if (
-    lower.includes("මම කැමති") ||
-    lower.includes("මම ආස")
-  ) {
-    const key = "preference_" + Date.now();
-    addMemory(key, text);
-  }
-
-  return null;
-}
-
-
-/* ==============================
-   7. SEND MESSAGE
-================================ */
-
-function setStatus(text) {
-  document.getElementById("status").textContent = text;
-}
-
-function sendMessage() {
+async function sendMessage() {
   const input = document.getElementById("userInput");
   const text = input.value.trim();
 
@@ -686,101 +13,117 @@ function sendMessage() {
 
   history.push({ text, role: "user" });
 
-  const learned = learnFromMessage(text);
-  const answer = learned || brain(text);
+  // වෙබ් අඩවියක් මතකයට එකතු කිරීම
+  const lower = text.toLowerCase();
 
-  setTimeout(() => {
-    addMessage(answer, "bot");
-    history.push({ text: answer, role: "bot" });
-    saveHistory();
-    speak(answer);
-  }, 350);
-}
+  if (
+    lower.startsWith("වෙබ් අඩවිය මතක තියාගන්න ") ||
+    lower.startsWith("website remember ")
+  ) {
+    const match = text.match(/https?:\/\/\S+/i);
 
-document.getElementById("userInput")
-  .addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
-      sendMessage();
+    if (!match) {
+      const answer =
+        "වෙබ් අඩවියේ සම්පූර්ණ https ලින්ක් එකත් එවන්නකෝ. ❤️";
+      addMessage(answer, "bot");
+      speak(answer);
+      return;
     }
-  });
 
+    try {
+      const url = new URL(match[0]);
 
-/* ==============================
-   8. MICROPHONE
-================================ */
+      if (!["https:", "http:"].includes(url.protocol)) {
+        throw new Error("Invalid URL");
+      }
 
-let recognition = null;
+      localStorage.setItem("sihinaWebsite", url.href);
 
-const SpeechRecognition =
-  window.SpeechRecognition ||
-  window.webkitSpeechRecognition;
+      const answer =
+        "හරි! ❤️ මේ වෙබ් අඩවියේ ලින්ක් එක මතකයට එකතු කළා. " +
+        "අවශ්‍ය වෙලාවට එයින් තොරතුරු ලබාගන්න පුළුවන්.";
 
-function startListening() {
-  if (!SpeechRecognition) {
-    setStatus("මෙම බ්‍රවුසරයේ Voice Recognition සහාය නැහැ. Chrome භාවිත කර බලන්න.");
+      addMessage(answer, "bot");
+      history.push({ text: answer, role: "bot" });
+      saveHistory();
+      speak(answer);
+      return;
+    } catch {
+      const answer = "ඒ ලින්ක් එක පරීක්ෂා කරලා නැවත එවන්න.";
+      addMessage(answer, "bot");
+      speak(answer);
+      return;
+    }
+  }
+
+  // අන්තර්ජාලයෙන් තොරතුරු ලබාගැනීම
+  const wantsWeb =
+    lower.includes("වෙබ් අඩවියෙන්") ||
+    lower.includes("වෙබ් එකෙන්") ||
+    lower.includes("අන්තර්ජාලයෙන්") ||
+    lower.includes("website එකෙන්") ||
+    lower.includes("ඉන්ටර්නෙට් එකෙන්");
+
+  if (wantsWeb) {
+    const savedUrl = localStorage.getItem("sihinaWebsite");
+
+    if (!savedUrl) {
+      const answer =
+        "මුලින් වෙබ් අඩවියක් මතකයට එකතු කරමු. ❤️";
+      addMessage(answer, "bot");
+      speak(answer);
+      return;
+    }
+
+    setStatus("වෙබ් අඩවියේ තොරතුරු සොයනවා... 🌐");
+
+    try {
+      const response = await fetch(
+        SIHINA_WORKER + "?url=" + encodeURIComponent(savedUrl)
+      );
+
+      if (!response.ok) {
+        throw new Error("Website request failed");
+      }
+
+      const data = await response.json();
+
+      if (!data.success || !data.content) {
+        throw new Error(data.error || "No content");
+      }
+
+      const answer =
+        "මම " + data.website +
+        " වෙබ් අඩවියෙන් ලබාගත් තොරතුරු මෙන්න. 🌐\n\n" +
+        data.content.slice(0, 900) +
+        "\n\nමේ වෙබ් අඩවියේ තිබෙන තොරතුරු පමණක් මම ලබාගත්තා. " +
+        "අදාළ පිළිතුර තහවුරු කිරීමට අවශ්‍ය නම් නිශ්චිත පිටුවක් සොයමු.";
+
+      addMessage(answer, "bot");
+      history.push({ text: answer, role: "bot" });
+      saveHistory();
+      speak(answer);
+    } catch (error) {
+      const answer =
+        "අනේ, මේ වෙලාවේ වෙබ් අඩවිය කියවන්න බැරි වුණා. " +
+        "ඒ වෙබ් අඩවිය නැවත උත්සාහ කරමු. ❤️";
+
+      addMessage(answer, "bot");
+      history.push({ text: answer, role: "bot" });
+      saveHistory();
+      speak(answer);
+    } finally {
+      setStatus("SIHINA සූදානම් ❤️");
+    }
+
     return;
   }
 
-  recognition = new SpeechRecognition();
-  recognition.lang = "si-LK";
-  recognition.continuous = false;
-  recognition.interimResults = false;
+  const learned = learnFromMessage(text);
+  const answer = learned || brain(text);
 
-  recognition.onstart = () => {
-    document.getElementById("micButton")
-      .classList.add("active");
-    document.getElementById("orbArea")
-      .classList.add("active");
-    setStatus("කියන්න කවිශ්ක... 🎙️");
-  };
-
-  recognition.onresult = (event) => {
-    const spoken =
-      event.results[0][0].transcript;
-
-    document.getElementById("userInput").value = spoken;
-    recognition.stop();
-    sendMessage();
-  };
-
-  recognition.onerror = () => {
-    setStatus("මයික්‍රෆෝනය පරීක්ෂා කරන්න.");
-  };
-
-  recognition.onend = () => {
-    document.getElementById("micButton")
-      .classList.remove("active");
-    document.getElementById("orbArea")
-      .classList.remove("active");
-  };
-
-  recognition.start();
+  addMessage(answer, "bot");
+  history.push({ text: answer, role: "bot" });
+  saveHistory();
+  speak(answer);
 }
-
-
-/* ==============================
-   9. CLEAR OPTIONS
-================================ */
-
-function clearChat() {
-  if (!confirm("කතාබහ සියල්ල මකන්නද?")) return;
-
-  history = [];
-  localStorage.removeItem("sihinaChat");
-  chat.innerHTML = "";
-
-  addMessage("හරි කවිශ්ක! අලුත් කතාබහක් පටන් ගමු. ❤️", "bot");
-}
-
-function clearMemory() {
-  if (!confirm("ඉගෙනගත් අමතර මතක සියල්ල මකන්නද?")) return;
-
-  memories = {};
-  localStorage.removeItem("sihinaMemories");
-
-  addMessage("අමතර මතක මකා දැම්මා. මූලික පැතිකඩ තවමත් තියෙනවා.", "bot");
-}
-
-</script>
-</body>
-</html>
