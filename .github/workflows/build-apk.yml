@@ -1,0 +1,57 @@
+
+name: Build SIHINA VOICE APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Create Android App
+        run: |
+          mkdir -p www
+          echo '<html><body>SIHINA VOICE</body></html>' > www/index.html
+          npm init -y
+          npm install @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7
+          npx cap init "SIHINA VOICE" "com.sihina.voice" --web-dir=www
+          cat > capacitor.config.json <<'EOF'
+          {
+            "appId": "com.sihina.voice",
+            "appName": "SIHINA VOICE",
+            "webDir": "www",
+            "server": {
+              "url": "https://sihinakumara263-bot.github.io/SIHINA-VOICE/",
+              "cleartext": false
+            }
+          }
+          EOF
+          npx cap add android
+          npx cap sync android
+
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SIHINA-VOICE-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
