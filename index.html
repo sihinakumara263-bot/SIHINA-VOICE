@@ -3,199 +3,396 @@
 <html lang="si">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050817">
 <title>SIHINA VOICE</title>
+
 <style>
-body {
-  margin: 0;
-  padding: 20px;
-  font-family: sans-serif;
-  background: #101126;
-  color: white;
-  text-align: center;
-}
-main {
-  max-width: 500px;
-  margin: auto;
-  padding: 20px;
-  background: #1b1d3b;
-  border-radius: 20px;
-}
-h1 { color: #ff80d0; }
-button, input {
-  padding: 14px;
-  margin: 6px;
-  border: 0;
-  border-radius: 12px;
-  font-size: 16px;
-}
-button {
-  background: #874cff;
-  color: white;
-}
-input {
-  width: 85%;
+* {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
-#chat {
-  text-align: left;
-  line-height: 1.8;
-  overflow-wrap: anywhere;
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 50% 42%, #182b55 0%, #080f25 42%, #030611 100%);
+  color: white;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.app {
+  width: 100%;
+  max-width: 500px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 35px 20px 28px;
+}
+
+h1 {
+  font-size: 25px;
+  letter-spacing: 5px;
+  color: #a9eaff;
+  text-shadow: 0 0 18px #00bfff;
+}
+
+.subtitle {
+  color: #91a9d2;
+  font-size: 12px;
+  margin-top: 9px;
+  letter-spacing: 3px;
+}
+
+.orb-area {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orb {
+  width: 205px;
+  height: 205px;
+  border-radius: 50%;
+  position: relative;
+  background:
+    radial-gradient(circle at 32% 25%,
+      #d9ffff 0%,
+      #68eaff 8%,
+      #168cff 28%,
+      #3927c9 57%,
+      #090d38 80%);
+  box-shadow:
+    0 0 25px #00cfff,
+    0 0 65px #006bff,
+    inset -18px -20px 40px #030728,
+    inset 12px 12px 30px #b4ffff;
+  animation: float 4s ease-in-out infinite;
+  transition: 0.3s;
+}
+
+.orb::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  border: 2px solid #45dfff88;
+  box-shadow: 0 0 25px #00cfff88;
+  animation: rotate 8s linear infinite;
+}
+
+.orb::after {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  border: 1px solid #ffffff44;
+  box-shadow: inset 0 0 25px #53dfff66;
+}
+
+.orb.listening {
+  animation: listen 0.8s ease-in-out infinite alternate;
+  box-shadow:
+    0 0 35px #00ffb7,
+    0 0 90px #00ffb7,
+    inset -18px -20px 40px #031d2c,
+    inset 12px 12px 30px #caffff;
+}
+
+.orb.speaking {
+  animation: speak 0.45s ease-in-out infinite alternate;
+  box-shadow:
+    0 0 35px #bd65ff,
+    0 0 100px #852bff,
+    inset -18px -20px 40px #13042d,
+    inset 12px 12px 30px #f0caff;
+}
+
+@keyframes float {
+  0%,100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-12px) scale(1.04); }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes listen {
+  from { transform: scale(0.94); }
+  to { transform: scale(1.09); }
+}
+
+@keyframes speak {
+  from { transform: scale(0.92); }
+  to { transform: scale(1.12); }
+}
+
+.status {
+  color: #a8d9ff;
+  font-size: 14px;
+  margin-top: 20px;
+  text-align: center;
+  min-height: 20px;
+}
+
+.message {
+  width: 100%;
+  min-height: 55px;
+  color: #dcecff;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 15px 0;
+  padding: 8px;
+}
+
+.controls {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+  border: 1px solid #5bcfff88;
+  background: #10284d;
+  color: white;
+  padding: 14px 20px;
+  border-radius: 30px;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 0 15px #007bff44;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+.mic {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  font-size: 27px;
+  background: linear-gradient(135deg,#087eff,#6929e9);
+  box-shadow: 0 0 25px #368dff;
+}
+
+.input-area {
+  display: flex;
+  width: 100%;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  background: #101d37;
+  color: white;
+  border: 1px solid #37618d;
+  border-radius: 25px;
+  padding: 14px;
+  outline: none;
+  font-size: 14px;
+}
+
+.footer {
+  color: #60799e;
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin-top: 22px;
 }
 </style>
 </head>
+
 <body>
-<main>
-  <h1>🎙️ SIHINA VOICE</h1>
-  <p>අපේම සිංහල හඬ සහායකයා ❤️</p>
-  <p id="status">සූදානම්</p>
+<div class="app">
 
-  <div id="chat">
-    <p><b>සිහිනා:</b> ආයුබෝවන්! මට කතා කරන්න.</p>
-  </div>
+  <header style="text-align:center">
+    <h1>SIHINA VOICE</h1>
+    <div class="subtitle">YOUR PERSONAL VOICE ASSISTANT</div>
+  </header>
 
-  <input id="message"
-    placeholder="මෙතැන ලියන්න...">
+  <main style="width:100%;display:flex;flex-direction:column;align-items:center">
+    <div class="orb-area">
+      <div class="orb" id="orb"></div>
+    </div>
 
-  <br>
-  <button onclick="sendMessage()">යවන්න</button>
-  <button onclick="listen()">🎤 කතා කරන්න</button>
-</main>
+    <div class="status" id="status">මම ඔයාට සවන් දෙන්න සූදානම් ❤️</div>
+    <div class="message" id="message">ආයුබෝවන්! මම SIHINA VOICE.</div>
+  </main>
+
+  <section style="width:100%">
+    <div class="controls">
+      <button class="mic" id="mic" onclick="listen()">🎙️</button>
+      <button onclick="stopVoice()">🔇 නවත්වන්න</button>
+    </div>
+
+    <div class="input-area">
+      <input id="input" placeholder="මෙතැන ලියන්න..." />
+      <button onclick="sendText()">යවන්න</button>
+    </div>
+  </section>
+
+  <div class="footer">POWERED BY SIHINA ❤️</div>
+</div>
 
 <script>
-const input = document.getElementById("message");
-const chat = document.getElementById("chat");
+const orb = document.getElementById("orb");
 const statusText = document.getElementById("status");
+const message = document.getElementById("message");
+const input = document.getElementById("input");
+
+let recognition;
+
+function setStatus(text, mode = "") {
+  statusText.textContent = text;
+  orb.className = "orb " + mode;
+}
 
 function brain(text) {
-  const s = text.toLowerCase();
+  const t = text.toLowerCase();
 
-  if (s.includes("හායි") ||
-      s.includes("හෙලෝ") ||
-      s.includes("ආයුබෝවන්")) {
-    return "ආයුබෝවන්! ඔයාට කොහොමද? 😊";
-  }
+  if (t.includes("ආයුබෝවන්") || t.includes("හායි") || t.includes("හෙලෝ"))
+    return "ආයුබෝවන්! ඔයාට කොහොමද?";
 
-  if (s.includes("නම")) {
-    return "මගේ නම සිහිනා. මම ඔයාගේ හඬ සහායකයා.";
-  }
+  if (t.includes("ඔයාගේ නම") || t.includes("කවුද ඔයා"))
+    return "මගේ නම සිහින වොයිස්. මම ඔයාගේ සහායිකාව.";
 
-  if (s.includes("කොහොමද")) {
-    return "මම හොඳින්! ඔයා එක්ක කතා කරන්න සූදානම්.";
-  }
+  if (t.includes("කොහොමද") || t.includes("සැපද"))
+    return "මම හොඳින් ඉන්නවා. ඔයාට කොහොමද?";
 
-  if (s.includes("ස්තුති")) {
-    return "ඒකට කමක් නැහැ. ❤️";
-  }
+  if (t.includes("ස්තූතියි") || t.includes("ස්තුතියි"))
+    return "ඔයාට උදව් කරන්න ලැබීම සතුටක්.";
 
-  if (s.includes("වේලාව")) {
-    return "දැන් වේලාව " +
-      new Date().toLocaleTimeString("si-LK") + " යි.";
-  }
+  if (t.includes("ආදරෙයි"))
+    return "මාත් ඔයාට ගොඩක් ආදරෙයි. හැමදාම සතුටින් ඉන්න.";
 
-  if (s.includes("දිනය")) {
-    return "අද දිනය " +
-      new Date().toLocaleDateString("si-LK") + " යි.";
-  }
+  if (t.includes("ඔයා මොකද කරන්නේ"))
+    return "මම ඔයා එක්ක කතා කරමින් ඉන්නවා.";
 
-  if (s.includes("බායි")) {
-    return "හරි, ආයෙත් කතා කරමු. පරිස්සමින් ඉන්න!";
-  }
+  if (t.includes("බායි") || t.includes("ගිහින් එන්නම්"))
+    return "හොඳයි. පරිස්සමින් ඉන්න. ආයෙත් එන්න.";
 
-  return "ඔයා කිව්වේ " + text +
-    ". මේ ගැන මගේ දැනුම තව වැඩි කරමු!";
+  if (t.includes("ඔයාට පුළුවන්ද"))
+    return "මට පුළුවන් දේවල් කරලා දෙන්න මම උත්සාහ කරනවා.";
+
+  return "ඒක මට තවම හරියට තේරුණේ නැහැ. වෙන විදිහකට අහලා බලන්නකෝ.";
 }
 
 function speak(text) {
   if (!("speechSynthesis" in window)) {
-    statusText.textContent = "හඬ කියවීම සහාය නැහැ";
+    setStatus("ඔයාගේ බ්‍රවුසරයේ හඬ පහසුකම නැහැ");
     return;
   }
 
   speechSynthesis.cancel();
 
-  const voice = new SpeechSynthesisUtterance(text);
-  voice.lang = "si-LK";
-  voice.rate = 0.9;
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "si-LK";
+  utterance.rate = 0.9;
+  utterance.pitch = 1.15;
 
-  speechSynthesis.speak(voice);
+  const voices = speechSynthesis.getVoices();
+  const sinhalaVoice = voices.find(v => v.lang.toLowerCase().startsWith("si"));
+
+  if (sinhalaVoice) utterance.voice = sinhalaVoice;
+
+  utterance.onstart = () => setStatus("මම කතා කරනවා... ❤️", "speaking");
+  utterance.onend = () => setStatus("මම අහගෙන ඉන්නවා ❤️");
+  utterance.onerror = () => setStatus("හඬ ලබාගැනීමට නොහැකි වුණා");
+
+  speechSynthesis.speak(utterance);
 }
 
-function sendMessage() {
+function reply(text) {
+  message.textContent = "ඔයා: " + text;
+  const answer = brain(text);
+  setTimeout(() => {
+    message.textContent = "SIHINA: " + answer;
+    speak(answer);
+  }, 400);
+}
+
+function sendText() {
   const text = input.value.trim();
   if (!text) return;
-
-  chat.innerHTML +=
-    "<p><b>ඔයා:</b> " + escapeText(text) + "</p>";
-
-  const answer = brain(text);
-
-  chat.innerHTML +=
-    "<p><b>සිහිනා:</b> " + escapeText(answer) + "</p>";
-
   input.value = "";
-  chat.scrollTop = chat.scrollHeight;
-
-  try {
-    localStorage.setItem(
-      "sihina_last_message", text
-    );
-  } catch (e) {}
-
-  speak(answer);
+  reply(text);
 }
 
-function escapeText(text) {
-  return text.replace(/[&<>"']/g, c => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  })[c]);
-}
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter") sendText();
+});
 
 function listen() {
-  const Recognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
 
-  if (!Recognition) {
-    statusText.textContent =
-      "හඬ හඳුනාගැනීමට Browser සහාය නැහැ.";
+  if (!SpeechRecognition) {
+    setStatus("මෙම බ්‍රවුසරයේ හඬ හඳුනාගැනීම නැහැ");
+    message.textContent = "Chrome බ්‍රවුසරයෙන් උත්සාහ කරන්න.";
     return;
   }
 
-  const rec = new Recognition();
-  rec.lang = "si-LK";
-  rec.continuous = false;
+  if (recognition) {
+    try { recognition.abort(); } catch(e) {}
+  }
 
-  rec.onstart = () => {
-    statusText.textContent = "මම අහගෙන ඉන්නවා...";
+  recognition = new SpeechRecognition();
+  recognition.lang = "si-LK";
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onstart = () => {
+    speechSynthesis.cancel();
+    setStatus("මම අහගෙන ඉන්නවා... 🎧", "listening");
   };
 
-  rec.onresult = event => {
-    input.value =
-      event.results[0][0].transcript;
-    sendMessage();
+  recognition.onresult = event => {
+    const text = event.results[0][0].transcript;
+    message.textContent = "ඔයා: " + text;
+    reply(text);
   };
 
-  rec.onerror = () => {
-    statusText.textContent =
-      "මයික්‍රෆෝනය සහ Internet පරීක්ෂා කරන්න.";
+  recognition.onerror = event => {
+    setStatus("හඬ හඳුනාගැනීමේ ගැටලුවක්");
+    message.textContent = "නැවත මයික් එක ඔබලා උත්සාහ කරන්න.";
   };
 
-  rec.onend = () => {
-    statusText.textContent = "සූදානම්";
+  recognition.onend = () => {
+    if (orb.classList.contains("listening")) {
+      setStatus("මම ඔයාට සවන් දෙන්න සූදානම් ❤️");
+    }
   };
 
   try {
-    rec.start();
-  } catch (e) {
-    statusText.textContent =
-      "නැවත උත්සාහ කරන්න.";
+    recognition.start();
+  } catch(e) {
+    setStatus("නැවත උත්සාහ කරන්න");
   }
 }
+
+function stopVoice() {
+  if (recognition) {
+    try { recognition.abort(); } catch(e) {}
+  }
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  setStatus("මම නිහඬයි ❤️");
+}
+
 </script>
 </body>
 </html>
