@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+<html lang="si">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SIHINA VOICE</title>
+<style>
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: sans-serif;
+  background: #101126;
+  color: white;
+  text-align: center;
+}
+main {
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
+  background: #1b1d3b;
+  border-radius: 20px;
+}
+h1 { color: #ff80d0; }
+button, input {
+  padding: 14px;
+  margin: 6px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 16px;
+}
+button {
+  background: #874cff;
+  color: white;
+}
+input {
+  width: 85%;
+  box-sizing: border-box;
+}
+#chat {
+  text-align: left;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+</style>
+</head>
+<body>
+<main>
+  <h1>🎙️ SIHINA VOICE</h1>
+  <p>අපේම සිංහල හඬ සහායකයා ❤️</p>
+  <p id="status">සූදානම්</p>
+
+  <div id="chat">
+    <p><b>සිහිනා:</b> ආයුබෝවන්! මට කතා කරන්න.</p>
+  </div>
+
+  <input id="message"
+    placeholder="මෙතැන ලියන්න...">
+
+  <br>
+  <button onclick="sendMessage()">යවන්න</button>
+  <button onclick="listen()">🎤 කතා කරන්න</button>
+</main>
+
+<script>
+const input = document.getElementById("message");
+const chat = document.getElementById("chat");
+const statusText = document.getElementById("status");
+
+function brain(text) {
+  const s = text.toLowerCase();
+
+  if (s.includes("හායි") ||
+      s.includes("හෙලෝ") ||
+      s.includes("ආයුබෝවන්")) {
+    return "ආයුබෝවන්! ඔයාට කොහොමද? 😊";
+  }
+
+  if (s.includes("නම")) {
+    return "මගේ නම සිහිනා. මම ඔයාගේ හඬ සහායකයා.";
+  }
+
+  if (s.includes("කොහොමද")) {
+    return "මම හොඳින්! ඔයා එක්ක කතා කරන්න සූදානම්.";
+  }
+
+  if (s.includes("ස්තුති")) {
+    return "ඒකට කමක් නැහැ. ❤️";
+  }
+
+  if (s.includes("වේලාව")) {
+    return "දැන් වේලාව " +
+      new Date().toLocaleTimeString("si-LK") + " යි.";
+  }
+
+  if (s.includes("දිනය")) {
+    return "අද දිනය " +
+      new Date().toLocaleDateString("si-LK") + " යි.";
+  }
+
+  if (s.includes("බායි")) {
+    return "හරි, ආයෙත් කතා කරමු. පරිස්සමින් ඉන්න!";
+  }
+
+  return "ඔයා කිව්වේ " + text +
+    ". මේ ගැන මගේ දැනුම තව වැඩි කරමු!";
+}
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) {
+    statusText.textContent = "හඬ කියවීම සහාය නැහැ";
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const voice = new SpeechSynthesisUtterance(text);
+  voice.lang = "si-LK";
+  voice.rate = 0.9;
+
+  speechSynthesis.speak(voice);
+}
+
+function sendMessage() {
+  const text = input.value.trim();
+  if (!text) return;
+
+  chat.innerHTML +=
+    "<p><b>ඔයා:</b> " + escapeText(text) + "</p>";
+
+  const answer = brain(text);
+
+  chat.innerHTML +=
+    "<p><b>සිහිනා:</b> " + escapeText(answer) + "</p>";
+
+  input.value = "";
+  chat.scrollTop = chat.scrollHeight;
+
+  try {
+    localStorage.setItem(
+      "sihina_last_message", text
+    );
+  } catch (e) {}
+
+  speak(answer);
+}
+
+function escapeText(text) {
+  return text.replace(/[&<>"']/g, c => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[c]);
+}
+
+function listen() {
+  const Recognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!Recognition) {
+    statusText.textContent =
+      "හඬ හඳුනාගැනීමට Browser සහාය නැහැ.";
+    return;
+  }
+
+  const rec = new Recognition();
+  rec.lang = "si-LK";
+  rec.continuous = false;
+
+  rec.onstart = () => {
+    statusText.textContent = "මම අහගෙන ඉන්නවා...";
+  };
+
+  rec.onresult = event => {
+    input.value =
+      event.results[0][0].transcript;
+    sendMessage();
+  };
+
+  rec.onerror = () => {
+    statusText.textContent =
+      "මයික්‍රෆෝනය සහ Internet පරීක්ෂා කරන්න.";
+  };
+
+  rec.onend = () => {
+    statusText.textContent = "සූදානම්";
+  };
+
+  try {
+    rec.start();
+  } catch (e) {
+    statusText.textContent =
+      "නැවත උත්සාහ කරන්න.";
+  }
+}
+</script>
+</body>
+</html>
